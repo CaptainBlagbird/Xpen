@@ -11,22 +11,23 @@ public class XpenView extends View
 {
 	Xpen xpen;
 	
-	private PointF P_last;							// Last point of touch
-	private PointF P_now;							// Current point of touch
-	private float Radius;							// Radius of circle
-	private int Sector;								// First sector on leaving circle
-	private int Dir;								// Direction (sign) and number of sectors visited
-	private boolean Left_circle = false;			// State of position, is only true if circle was left during onTouchMove
-	private boolean Moved = false;					// To check if touch moved or only tapped
-	private boolean Uppercase = true;				// Letter case state
-	private char[][] Ascii = {{'a', 's', 'i', 'o'},
-							  {'r', 'd', 'h', 'u'},
-							  {'x', 'g', 'j', 'v'},
-							  {'?', 'ü', ',', 'w'},
-							  {'n', 'y', 't', 'e'},
-							  {'m', 'b', 'c', 'l'},
-							  {'f', 'p', 'z', 'k'},
-							  {'ä', 'q', '.', 'ö'}};	// Table of the arranged characters
+	private PointF		posLast;					// Last point of touch
+	private PointF		posNow;						// Current point of touch
+	private float		radius;						// Radius of circle
+	private int			sector;						// First sector on leaving circle
+	private int			dir;						// Direction (sign) and number of sectors visited
+	private boolean		leftCircle = false;			// State of position, is only true if circle was left during onTouchMove
+	private boolean		movedPos = false;			// To check if touch moved or only tapped
+	private boolean		uppercase = true;			// Letter case state
+	private char[][]	characters = {
+							{'a', 's', 'i', 'o'},
+							{'r', 'd', 'h', 'u'},
+							{'x', 'g', 'j', 'v'},
+							{'?', 'ü', ',', 'w'},
+							{'n', 'y', 't', 'e'},
+							{'m', 'b', 'c', 'l'},
+							{'f', 'p', 'z', 'k'},
+							{'ä', 'q', '.', 'ö'}};	// Table of the arranged characters
 	
 	public XpenView(Context context, AttributeSet attrs)
 	{
@@ -42,7 +43,7 @@ public class XpenView extends View
 		
 		// Calculate the diameter with the circle width to image width ratio 260:800,
 		// and divide in half to get the radius
-		Radius = ((float)0.325 * getWidth()) / 2;
+		radius = ((float)0.325 * getWidth()) / 2;
 	}
 
 	/** Gets the distance from the center to point p */
@@ -77,7 +78,7 @@ public class XpenView extends View
 		return angle;
 	}
 
-	/** Modulus calculation that supports negative numbers */
+	/** Modulus calculation (a % b) that supports negative numbers */
 	private double mod(double a, double b)
 	{
 		double result;
@@ -104,7 +105,7 @@ public class XpenView extends View
 	/** Sets the background image depending on the letter case */
 	private void handleBackground()
 	{
-		if(Uppercase)
+		if(uppercase)
 		{
 			findViewById(R.id.keyboard).setBackgroundResource(R.drawable.background_uppercase);
 		}
@@ -143,79 +144,79 @@ public class XpenView extends View
 	private void img_Input_onTouchDown(MotionEvent e)
 	{
 		// Get touch point
-		P_now = new PointF(e.getX(), e.getY());
+		posNow = new PointF(e.getX(), e.getY());
 		
-		if (getRadius(P_now) > Radius) return; // Not inside of circle
+		if (getRadius(posNow) > radius) return; // Not inside of circle
 
 		// Remember point
-		P_last = P_now;
+		posLast = posNow;
 	}
 	
 	private void img_Input_onTouchMove(MotionEvent e)
 	{
-		Moved = true;
+		movedPos = true;
 		
 		// Get touch point
-		P_now = new PointF(e.getX(), e.getY());
+		posNow = new PointF(e.getX(), e.getY());
 		
-		if ((getRadius(P_last) < Radius) && (getRadius(P_now) >= Radius)) // Leaving circle
+		if ((getRadius(posLast) < radius) && (getRadius(posNow) >= radius)) // Leaving circle
 		{
 			// Update position state variable
-			Left_circle = true;
+			leftCircle = true;
 	
 			// Reset direction/number variable
-			Dir = 0;
+			dir = 0;
 	
 			// Calculate the sector
-			Sector = getSector(P_now);
+			sector = getSector(posNow);
 		}
-		else if ((getRadius(P_last) >= Radius) && (getRadius(P_now) < Radius)) // Entering circle
+		else if ((getRadius(posLast) >= radius) && (getRadius(posNow) < radius)) // Entering circle
 		{
 			// Update position state variable
-			Left_circle = false;
+			leftCircle = false;
 	
-			// Check if Dir is valid (crossed 1 ... 4 lines)
-			if ((Dir != 0) && (Dir <= 4) && (Dir >= -4))
+			// Check if dir is valid (crossed 1 ... 4 lines)
+			if ((dir != 0) && (dir <= 4) && (dir >= -4))
 			{
-				// Calculate array index i with Dir
+				// Calculate array index i with dir
 				int i;
-				if (Dir > 0)
+				if (dir > 0)
 				{
-					// Dir=  1 ... 4  to  i= 0 ... 3
-					i = Dir - 1;
+					// dir = 1 ... 4  to  i= 0 ... 3
+					i = dir - 1;
 				}
-				else // Dir < 0
+				else // dir < 0
 				{
-					// Dir= -1 ...-4  to  i= 4 ... 7
-					i = 3 - Dir;
+					// dir = -1 ...-4  to  i= 4 ... 7
+					i = 3 - dir;
 				}
 				
 				// Set uppercase for the first character of a field
-				if(xpen.ReadText(-2).length() < 1)
+				if(xpen.readText(-2).length() < 1)
 				{
-					Uppercase = true;
+					uppercase = true;
 					handleBackground();
 				}
 				
 				// Send character in correct case
-				if(Uppercase)
+				if(uppercase)
 				{
-					xpen.SendText("" + Character.toUpperCase(Ascii[i][Sector]));
-					Uppercase = false;
+					xpen.sendText("" + Character.toUpperCase(characters[i][sector]));
+					uppercase = false;
 					handleBackground();
 				}
 				else
 				{
-					xpen.SendText("" + Ascii[i][Sector]);
+					xpen.sendText("" + characters[i][sector]);
 				}
 			}
 		}
 		
-		if (Left_circle)
+		if (leftCircle)
 		{
 			// Norm angles to 0...PI/2 so we can check with the same values for each line
-			double al = getAngle(P_last) % (Math.PI / 2); // Last angle normed
-			double ac = getAngle(P_now) % (Math.PI / 2); // Current angle normed
+			double al = getAngle(posLast) % (Math.PI / 2); // Last angle normed
+			double ac = getAngle(posNow) % (Math.PI / 2); // Current angle normed
 	
 			// Exclude false hits at crossing of ~2*PI <--> 0 by only looking for smaller changes than PI/3
 			// Also excludes false hits due to (PI/2 % PI/2) = 0
@@ -223,36 +224,36 @@ public class XpenView extends View
 			{
 				// Count crossed lines
 				// (it's possible to "uncross" a line by going back in the other direction, only the final value is used)
-				if ((ac > Math.PI / 4) && (al <= Math.PI / 4)) Dir++; // Crossed line CCW
-				if ((ac <= Math.PI / 4) && (al > Math.PI / 4)) Dir--; // Crossed line CW
+				if ((ac > Math.PI / 4) && (al <= Math.PI / 4)) dir++; // Crossed line CCW
+				if ((ac <= Math.PI / 4) && (al > Math.PI / 4)) dir--; // Crossed line CW
 			}
 		}
 	
 		// Remember point
-		P_last = P_now;
+		posLast = posNow;
 	}
 	
 	private void img_Input_onTouchUp(MotionEvent e)
 	{
 		// Get touch point
-		P_now = new PointF(e.getX(), e.getY());
+		posNow = new PointF(e.getX(), e.getY());
 		
-		// Check if Dir is valid (crossed 1 ... 4 lines)
-		if (!Left_circle && (Dir != 0) && (Dir <= 4) && (Dir >= -4))
+		// Check if dir is valid (crossed 1 ... 4 lines)
+		if (!leftCircle && (dir != 0) && (dir <= 4) && (dir >= -4))
 		{
 			// Send space
-			xpen.SendText(" ");
+			xpen.sendText(" ");
 
 			// Set uppercase after ". "
-			if(xpen.ReadText(-2).equals(". "))
+			if(xpen.readText(-2).equals(". "))
 			{
-				Uppercase = true;
+				uppercase = true;
 				handleBackground();
 			}
 		}
-		else if(!Moved && (getRadius(P_now) > Radius)) // Touch outside and not moved -> Tapped outside
+		else if(!movedPos && (getRadius(posNow) > radius)) // Touch outside and not moved -> Tapped outside
 		{
-			switch (getSector(P_now))
+			switch (getSector(posNow))
 			{
 				case 0:
 					// Switch to numbers/special characters
@@ -260,26 +261,26 @@ public class XpenView extends View
 					break;
 				case 1:
 					// Toggle letter case
-					Uppercase = !Uppercase;
+					uppercase = !uppercase;
 					handleBackground();
 					break;
 				case 2:
 					// Send backspace
-					xpen.SendKey(KeyEvent.KEYCODE_DEL);
+					xpen.sendKey(KeyEvent.KEYCODE_DEL);
 					break;
 				case 3:
 					// Send enter
-					xpen.SendKey(KeyEvent.KEYCODE_ENTER);
+					xpen.sendKey(KeyEvent.KEYCODE_ENTER);
 					break;
 			}
 		}
 		
 		// Reset position state variable
-		Left_circle = false;
+		leftCircle = false;
 		// Reset moved state variable
-		Moved = false;
+		movedPos = false;
 		// Reset direction/number variable
-		Dir = 0;
+		dir = 0;
 	}
 	
 	public void setIME(Xpen _xpen)
