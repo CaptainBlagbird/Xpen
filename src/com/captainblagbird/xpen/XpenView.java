@@ -37,13 +37,33 @@ public class XpenView extends View
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	{
-		// Adjust the height to match the aspect ratio 4:3
-		int height = Math.round(0.75f * getWidth());
-		setMeasuredDimension(widthMeasureSpec, height);
+		// Get size without mode
+		int measureWidth = View.MeasureSpec.getSize(widthMeasureSpec);
+		int measureHeight = View.MeasureSpec.getSize(heightMeasureSpec);
+		
+		int width = measureWidth;
+		int height = measureHeight;
+		
+		// Get orientation
+		if(measureWidth > measureHeight) // Landscape mode
+		{
+			// Switch to button mode
+			// TODO
+			// Placeholder:
+			height = 100;
+		}
+		else // Portrait mode
+		{
+			// Adjust the height to match the aspect ratio 4:3
+			height = Math.round(0.75f * width);
+		}
 		
 		// Calculate the diameter with the circle width to image width ratio 260:800,
 		// and divide in half to get the radius
-		radius = ((float)0.325 * getWidth()) / 2;
+		radius = ((float)0.325 * width) / 2;
+		
+		// Set the new size
+		setMeasuredDimension(width, height);
 	}
 
 	/** Gets the distance from the center to point p */
@@ -264,7 +284,7 @@ public class XpenView extends View
 				{
 					case 0:
 						// Switch to numbers/special characters
-						//-
+						// TODO
 						break;
 					case 1:
 						// Toggle letter case
