@@ -16,7 +16,7 @@ public class XpenView extends View
 	private float		radius;						// Radius of circle
 	private int			sector;						// First sector on leaving circle
 	private int			dir;						// Direction (sign) and number of sectors visited
-	private boolean		leftCircle = false;			// State of position, is only true if circle was left during onTouchMove
+	private boolean		outsideOfCircle = false;	// State of position, is only true if circle was left during onTouchMove
 	private boolean		movedPos = false;			// To check if touch moved or only tapped
 	private boolean		uppercase = true;			// Letter case state
 	private char[][]	characters = {
@@ -162,7 +162,7 @@ public class XpenView extends View
 		if ((getRadius(posLast) < radius) && (getRadius(posNow) >= radius)) // Leaving circle
 		{
 			// Update position state variable
-			leftCircle = true;
+			outsideOfCircle = true;
 	
 			// Reset direction/number variable
 			dir = 0;
@@ -173,7 +173,7 @@ public class XpenView extends View
 		else if ((getRadius(posLast) >= radius) && (getRadius(posNow) < radius)) // Entering circle
 		{
 			// Update position state variable
-			leftCircle = false;
+			outsideOfCircle = false;
 	
 			// Check if dir is valid (crossed 1 ... 4 lines)
 			if ((dir != 0) && (dir <= 4) && (dir >= -4))
@@ -212,7 +212,7 @@ public class XpenView extends View
 			}
 		}
 		
-		if (leftCircle)
+		if (outsideOfCircle)
 		{
 			// Norm angles to 0...PI/2 so we can check with the same values for each line
 			double al = getAngle(posLast) % (Math.PI / 2); // Last angle normed
@@ -239,7 +239,7 @@ public class XpenView extends View
 		posNow = new PointF(e.getX(), e.getY());
 		
 		// Check if dir is valid (crossed 1 ... 4 lines)
-		if (!leftCircle && (dir != 0) && (dir <= 4) && (dir >= -4))
+		if (!outsideOfCircle && (dir != 0) && (dir <= 4) && (dir >= -4))
 		{
 			// Send space
 			xpen.sendText(" ");
@@ -251,32 +251,40 @@ public class XpenView extends View
 				handleBackground();
 			}
 		}
-		else if(!movedPos && (getRadius(posNow) > radius)) // Touch outside and not moved -> Tapped outside
+		else if(!movedPos) // Not moved -> Tapped
 		{
-			switch (getSector(posNow))
+			if(getRadius(posNow) <= radius) // Tapped inside circle
 			{
-				case 0:
-					// Switch to numbers/special characters
-					//-
-					break;
-				case 1:
-					// Toggle letter case
-					uppercase = !uppercase;
-					handleBackground();
-					break;
-				case 2:
-					// Send backspace
-					xpen.sendKey(KeyEvent.KEYCODE_DEL);
-					break;
-				case 3:
-					// Send enter
-					xpen.sendKey(KeyEvent.KEYCODE_ENTER);
-					break;
+				// Send space
+				xpen.sendText(" ");
+			}
+			else // Tapped outside circle
+			{
+				switch (getSector(posNow))
+				{
+					case 0:
+						// Switch to numbers/special characters
+						//-
+						break;
+					case 1:
+						// Toggle letter case
+						uppercase = !uppercase;
+						handleBackground();
+						break;
+					case 2:
+						// Send backspace
+						xpen.sendKey(KeyEvent.KEYCODE_DEL);
+						break;
+					case 3:
+						// Send enter
+						xpen.sendKey(KeyEvent.KEYCODE_ENTER);
+						break;
+				}
 			}
 		}
 		
 		// Reset position state variable
-		leftCircle = false;
+		outsideOfCircle = false;
 		// Reset moved state variable
 		movedPos = false;
 		// Reset direction/number variable
