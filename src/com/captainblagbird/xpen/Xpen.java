@@ -3,6 +3,7 @@ package com.captainblagbird.xpen;
 import android.inputmethodservice.InputMethodService;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 
 public class Xpen extends InputMethodService
 {
@@ -14,6 +15,14 @@ public class Xpen extends InputMethodService
 		xpenView = (XpenView) getLayoutInflater().inflate(R.layout.input, null);
 		xpenView.setIME(this);
 		return xpenView;
+	}
+	
+	@Override
+	public void onUpdateSelection(int oldSelStart, int oldSelEnd, int newSelStart, int newSelEnd, int candidatesStart, int candidatesEnd)
+	{
+        super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd);
+        
+        xpenView.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd);
 	}
 	
 	/** Helper to commit text to input */

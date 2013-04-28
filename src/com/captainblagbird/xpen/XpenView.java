@@ -65,6 +65,21 @@ public class XpenView extends View
 		// Set the new size
 		setMeasuredDimension(width, height);
 	}
+	
+	void onUpdateSelection(int oldSelStart, int oldSelEnd, int newSelStart, int newSelEnd, int candidatesStart, int candidatesEnd)
+	{
+		// Set uppercase for the first character or after ". "
+		if((newSelStart == 0) || xpen.readText(-2).equals(". "))
+		{
+			uppercase = true;
+			handleBackground();
+		}
+		else
+		{
+			uppercase = false;
+			handleBackground();
+		}
+	}
 
 	/** Gets the distance from the center to point p */
 	private double getRadius(PointF p)
@@ -211,13 +226,6 @@ public class XpenView extends View
 					i = 3 - dir;
 				}
 				
-				// Set uppercase for the first character of a field
-				if(xpen.readText(-2).length() < 1)
-				{
-					uppercase = true;
-					handleBackground();
-				}
-				
 				// Send character in correct case
 				if(uppercase)
 				{
@@ -263,13 +271,6 @@ public class XpenView extends View
 		{
 			// Send space
 			xpen.sendText(" ");
-
-			// Set uppercase after ". "
-			if(xpen.readText(-2).equals(". "))
-			{
-				uppercase = true;
-				handleBackground();
-			}
 		}
 		else if(!movedPos) // Not moved -> Tapped
 		{
