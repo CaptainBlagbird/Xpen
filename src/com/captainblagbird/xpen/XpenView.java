@@ -45,14 +45,14 @@ public class XpenView extends View
 		int height = measureHeight;
 		
 		// Get orientation
-		if(measureWidth > measureHeight) // Landscape mode
+		if(measureWidth > measureHeight)  // Landscape mode
 		{
 			// Switch to button mode
 			// TODO
 			// Placeholder:
 			height = 100;
 		}
-		else // Portrait mode
+		else  // Portrait mode
 		{
 			// Adjust the height to match the aspect ratio 4:3
 			height = Math.round(0.75f * width);
@@ -60,7 +60,7 @@ public class XpenView extends View
 		
 		// Calculate the diameter with the circle width to image width ratio 260:800,
 		// and divide in half to get the radius
-		radius = ((float)0.325 * width) / 2;
+		radius = (0.325f * width) / 2;
 		
 		// Set the new size
 		setMeasuredDimension(width, height);
@@ -68,17 +68,26 @@ public class XpenView extends View
 	
 	void onUpdateSelection(int oldSelStart, int oldSelEnd, int newSelStart, int newSelEnd, int candidatesStart, int candidatesEnd)
 	{
-		// Set uppercase for the first character or after ". "
-		if((newSelStart == 0) || xpen.readText(-2).equals(". "))
+		// Check if selection moved 1 to the right, else return
+		if(newSelStart-oldSelStart != 1) return;
+		
+		// Get last character
+		char c = xpen.readText(-1).charAt(0);
+		
+		if((c == '.') || (c == ':') || (c == '!') || (c == '?') || (c == '…'))  // Terminating character
 		{
 			uppercase = true;
-			handleBackground();
 		}
-		else
+		else if((c == ' ') || (c == '\t') || (c == '\r') || (c == '\n'))  // Space character
+		{
+			// Don't change letter case
+		}
+		else  // Any other character
 		{
 			uppercase = false;
-			handleBackground();
 		}
+		
+		handleBackground();
 	}
 
 	/** Gets the distance from the center to point p */
@@ -181,7 +190,7 @@ public class XpenView extends View
 		// Get touch point
 		posNow = new PointF(e.getX(), e.getY());
 		
-		if (getRadius(posNow) > radius) return; // Not inside of circle
+		if (getRadius(posNow) > radius) return;  // Not inside of circle
 
 		// Remember point
 		posLast = posNow;
@@ -194,7 +203,7 @@ public class XpenView extends View
 		// Get touch point
 		posNow = new PointF(e.getX(), e.getY());
 		
-		if ((getRadius(posLast) < radius) && (getRadius(posNow) >= radius)) // Leaving circle
+		if ((getRadius(posLast) < radius) && (getRadius(posNow) >= radius))  // Leaving circle
 		{
 			// Update position state variable
 			outsideOfCircle = true;
@@ -205,7 +214,7 @@ public class XpenView extends View
 			// Calculate the sector
 			sector = getSector(posNow);
 		}
-		else if ((getRadius(posLast) >= radius) && (getRadius(posNow) < radius)) // Entering circle
+		else if ((getRadius(posLast) >= radius) && (getRadius(posNow) < radius))  // Entering circle
 		{
 			// Update position state variable
 			outsideOfCircle = false;
@@ -220,7 +229,7 @@ public class XpenView extends View
 					// dir = 1 ... 4  to  i= 0 ... 3
 					i = dir - 1;
 				}
-				else // dir < 0
+				else  // dir < 0
 				{
 					// dir = -1 ...-4  to  i= 4 ... 7
 					i = 3 - dir;
@@ -243,8 +252,8 @@ public class XpenView extends View
 		if (outsideOfCircle)
 		{
 			// Norm angles to 0...PI/2 so we can check with the same values for each line
-			double al = getAngle(posLast) % (Math.PI / 2); // Last angle normed
-			double ac = getAngle(posNow) % (Math.PI / 2); // Current angle normed
+			double al = getAngle(posLast) % (Math.PI / 2);  // Last angle normed
+			double ac = getAngle(posNow) % (Math.PI / 2);  // Current angle normed
 	
 			// Exclude false hits at crossing of ~2*PI <--> 0 by only looking for smaller changes than PI/3
 			// Also excludes false hits due to (PI/2 % PI/2) = 0
@@ -252,8 +261,8 @@ public class XpenView extends View
 			{
 				// Count crossed lines
 				// (it's possible to "uncross" a line by going back in the other direction, only the final value is used)
-				if ((ac > Math.PI / 4) && (al <= Math.PI / 4)) dir++; // Crossed line CCW
-				if ((ac <= Math.PI / 4) && (al > Math.PI / 4)) dir--; // Crossed line CW
+				if ((ac > Math.PI / 4) && (al <= Math.PI / 4)) dir++;  // Crossed line CCW
+				if ((ac <= Math.PI / 4) && (al > Math.PI / 4)) dir--;  // Crossed line CW
 			}
 		}
 	
@@ -272,14 +281,14 @@ public class XpenView extends View
 			// Send space
 			xpen.sendText(" ");
 		}
-		else if(!movedPos) // Not moved -> Tapped
+		else if(!movedPos)  // Not moved -> Tapped
 		{
-			if(getRadius(posNow) <= radius) // Tapped inside circle
+			if(getRadius(posNow) <= radius)  // Tapped inside circle
 			{
 				// Send space
 				xpen.sendText(" ");
 			}
-			else // Tapped outside circle
+			else  // Tapped outside circle
 			{
 				switch (getSector(posNow))
 				{

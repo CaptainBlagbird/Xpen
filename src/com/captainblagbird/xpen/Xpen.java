@@ -3,7 +3,6 @@ package com.captainblagbird.xpen;
 import android.inputmethodservice.InputMethodService;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 
 public class Xpen extends InputMethodService
 {
@@ -22,6 +21,7 @@ public class Xpen extends InputMethodService
 	{
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd);
         
+		// Pass it to the view
         xpenView.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd);
 	}
 	
