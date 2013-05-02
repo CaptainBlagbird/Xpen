@@ -66,10 +66,18 @@ public class XpenView extends View
 		setMeasuredDimension(width, height);
 	}
 	
-	void onUpdateSelection(int oldSelStart, int oldSelEnd, int newSelStart, int newSelEnd, int candidatesStart, int candidatesEnd)
+	void handleLettercase(int oldSelStart, int oldSelEnd, int newSelStart, int newSelEnd, int candidatesStart, int candidatesEnd)
 	{
-		// Check if selection moved 1 to the right, else return
-		if(newSelStart-oldSelStart != 1) return;
+		// Set uppercase if cursor is at position 0
+		if(newSelStart == 0)
+		{
+			uppercase = true;
+			handleBackground();
+			return;
+		}
+		
+		// Check if selection moved only 1 to the left/right, else return
+		if(Math.abs(newSelStart-oldSelStart) != 1) return;
 		
 		// Get last character
 		char c = xpen.readText(-1).charAt(0);
