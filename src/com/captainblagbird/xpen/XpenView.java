@@ -24,11 +24,11 @@ public class XpenView extends View
 							{'a', 's', 'i', 'o'},
 							{'r', 'd', 'h', 'u'},
 							{'x', 'g', 'j', 'v'},
-							{'?', '"', ',', 'w'},
+							{'?', 'ü', ',', 'w'},
 							{'n', 'y', 't', 'e'},
 							{'m', 'b', 'c', 'l'},
 							{'f', 'p', 'z', 'k'},
-							{'ä', 'q', '.', '$'}};	// Table of the arranged characters
+							{'ä', 'q', '.', 'ö'}};	// Table of the arranged characters
 	
 	public XpenView(Context context, AttributeSet attrs)
 	{
