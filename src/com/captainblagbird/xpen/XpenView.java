@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.util.Log;
 
 public class XpenView extends View
 {
@@ -23,11 +24,11 @@ public class XpenView extends View
 							{'a', 's', 'i', 'o'},
 							{'r', 'd', 'h', 'u'},
 							{'x', 'g', 'j', 'v'},
-							{'?', 'ü', ',', 'w'},
+							{'?', '"', ',', 'w'},
 							{'n', 'y', 't', 'e'},
 							{'m', 'b', 'c', 'l'},
 							{'f', 'p', 'z', 'k'},
-							{'ä', 'q', '.', 'ö'}};	// Table of the arranged characters
+							{'ä', 'q', '.', '$'}};	// Table of the arranged characters
 	
 	public XpenView(Context context, AttributeSet attrs)
 	{
@@ -206,7 +207,11 @@ public class XpenView extends View
 	
 	private void img_Input_onTouchMove(MotionEvent e)
 	{
-		movedPos = true;
+		if ((getRadius(posLast)-getRadius(posNow))<=10.0) {
+			movedPos=false;
+		} else {
+			movedPos = true;
+		}
 		
 		// Get touch point
 		posNow = new PointF(e.getX(), e.getY());
@@ -289,6 +294,7 @@ public class XpenView extends View
 			// Send space
 			xpen.sendText(" ");
 		}
+		
 		else if(!movedPos)  // Not moved -> Tapped
 		{
 			if(getRadius(posNow) <= radius)  // Tapped inside circle
