@@ -24,12 +24,11 @@ public class XpenView extends View
 							{'a', 's', 'i', 'o'},
 							{'r', 'd', 'h', 'u'},
 							{'x', 'g', 'j', 'v'},
-							{'?', '"', ',', 'w'},
+							{'?', 'ü', ',', 'w'},
 							{'n', 'y', 't', 'e'},
 							{'m', 'b', 'c', 'l'},
 							{'f', 'p', 'z', 'k'},
-							{'ä', 'q', '.', '$'}};	// Table of the arranged characters
-	
+							{'ä', 'q', '.', 'ö'}};	// Table of the arranged characters
 	public XpenView(Context context, AttributeSet attrs)
 	{
 		super(context,attrs);
@@ -207,9 +206,12 @@ public class XpenView extends View
 	
 	private void img_Input_onTouchMove(MotionEvent e)
 	{
-		if ((getRadius(posLast)-getRadius(posNow))<=10.0) {
+		if ((getRadius(posLast)-getRadius(posNow))<=10.0) 
+		{
 			movedPos=false;
-		} else {
+		} 
+		else 
+		{
 			movedPos = true;
 		}
 		
@@ -233,21 +235,29 @@ public class XpenView extends View
 			outsideOfCircle = false;
 	
 			// Check if dir is valid (crossed 1 ... 4 lines)
-			if ((dir != 0) && (dir <= 4) && (dir >= -4))
+			if ((dir != 0))
 			{
 				// Calculate array index i with dir
 				int i;
-				if (dir > 0)
+				if (dir > 4)
+				{
+					i = (dir-1) % 4;
+				}
+				else if (dir > 0 && dir <= 4)
 				{
 					// dir = 1 ... 4  to  i= 0 ... 3
 					i = dir - 1;
+				}
+				else if (dir < -4) 
+				{
+					i = ((Math.abs(dir)-1) % 4) + 4;
 				}
 				else  // dir < 0
 				{
 					// dir = -1 ...-4  to  i= 4 ... 7
 					i = 3 - dir;
 				}
-				
+	
 				// Send character in correct case
 				if(uppercase)
 				{
@@ -276,13 +286,15 @@ public class XpenView extends View
 				// (it's possible to "uncross" a line by going back in the other direction, only the final value is used)
 				if ((ac > Math.PI / 4) && (al <= Math.PI / 4)) dir++;  // Crossed line CCW
 				if ((ac <= Math.PI / 4) && (al > Math.PI / 4)) dir--;  // Crossed line CW
+				if (Math.abs(dir)%4==1 && Math.abs(dir)>4 && uppercase) uppercase=false; // Has gone in a full circle and is already uppercase
+				else if (Math.abs(dir)%4==1 && Math.abs(dir)>4 && !uppercase) uppercase=true; // Has gone in a full circle and is not uppercase
 			}
 		}
 	
 		// Remember point
 		posLast = posNow;
 	}
-	
+
 	private void img_Input_onTouchUp(MotionEvent e)
 	{
 		// Get touch point
