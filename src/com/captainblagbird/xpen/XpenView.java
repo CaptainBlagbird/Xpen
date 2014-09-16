@@ -236,23 +236,15 @@ public class XpenView extends View
 			// Update position state variable
 			outsideOfCircle = false;
 	
-			// Check if dir is valid (crossed 1 ... 4 lines)
-			if ((dir != 0))
+			// Check if dir is valid (crossed at least one line)
+			if(dir != 0)
 			{
 				// Calculate array index i with dir
 				int i;
-				if (dir > 4)
-				{
-					i = (dir-1) % 4;
-				}
-				else if (dir > 0 && dir <= 4)
+				if(dir > 0)
 				{
 					// dir = 1 ... 4  to  i= 0 ... 3
 					i = dir - 1;
-				}
-				else if (dir < -4) 
-				{
-					i = ((Math.abs(dir)-1) % 4) + 4;
 				}
 				else  // dir < 0
 				{
@@ -288,8 +280,20 @@ public class XpenView extends View
 				// (it's possible to "uncross" a line by going back in the other direction, only the final value is used)
 				if ((ac > Math.PI / 4) && (al <= Math.PI / 4)) dir++;  // Crossed line CCW
 				if ((ac <= Math.PI / 4) && (al > Math.PI / 4)) dir--;  // Crossed line CW
-				if (Math.abs(dir)%4==1 && Math.abs(dir)>4 && uppercase) uppercase=false; // Has gone in a full circle and is already uppercase
-				else if (Math.abs(dir)%4==1 && Math.abs(dir)>4 && !uppercase) uppercase=true; // Has gone in a full circle and is not uppercase
+
+				// Check if a complete circle was done
+				if(Math.abs(dir) > 4)
+				{
+					// Toggle letter case
+					uppercase =! uppercase;
+					handleBackground();
+
+					// Norm dir to -4 ... 4 without 0
+					int temp = 4;
+					if(dir < 0) temp = -4;
+					dir = dir % 4;
+					if(dir == 0) dir = temp;
+				}
 			}
 		}
 	
@@ -302,8 +306,8 @@ public class XpenView extends View
 		// Get touch point
 		posNow = new PointF(e.getX(), e.getY());
 		
-		// Check if dir is valid (crossed 1 ... 4 lines)
-		if (!outsideOfCircle && (dir != 0) && (dir <= 4) && (dir >= -4))
+		// Check if dir is valid (crossed at least one line)
+		if(!outsideOfCircle && (dir != 0))
 		{
 			// Send space
 			xpen.sendText(" ");
