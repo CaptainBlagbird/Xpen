@@ -124,7 +124,7 @@ public class XpenView extends View
 		// Calculate angle with special atan (calculates the correct angle in all quadrants)
 		double angle = Math.atan2(y, x);
 		// Make all angles positive
-		if (angle < 0) angle = Math.PI * 2 + angle;
+		if(angle < 0) angle = Math.PI * 2 + angle;
 
 		return angle;
 	}
@@ -136,7 +136,7 @@ public class XpenView extends View
 		// Calculate result with modulus operator
 		result = a % b;
 		// Fix zero truncation
-		if (result < 0) result += b;
+		if(result < 0) result += b;
 		return result;
 	}
 	
@@ -169,7 +169,7 @@ public class XpenView extends View
 	public boolean onTouchEvent(MotionEvent e)
 	{
 		// Touch handler
-		// (Without MotionEvent.ACTION_MASK or e.getActionMasked() because we use only 1 Finger anyway
+		// (Without MotionEvent.ACTION_MASK or e.getActionMasked() because we use only 1 finger anyway
 		// and to support the lowest possible required API Level)
 		switch(e.getAction())
 		{
@@ -197,7 +197,7 @@ public class XpenView extends View
 		// Get touch point
 		posNow = new PointF(e.getX(), e.getY());
 		
-		if (getRadius(posNow) > radius) return;  // Not inside of circle
+		if(getRadius(posNow) > radius) return;  // Not inside of circle
 
 		// Remember point
 		posLast = posNow;
@@ -208,7 +208,8 @@ public class XpenView extends View
 		// Return if posLast is still undefined
 		if(posLast == null) return;
 		
-		if ((getRadius(posLast)-getRadius(posNow))<=10.0) 
+		// Better sensitivity for tapping
+		if((getRadius(posLast)-getRadius(posNow)) <= 10.0) 
 		{
 			movedPos=false;
 		} 
@@ -220,7 +221,7 @@ public class XpenView extends View
 		// Get touch point
 		posNow = new PointF(e.getX(), e.getY());
 		
-		if ((getRadius(posLast) < radius) && (getRadius(posNow) >= radius))  // Leaving circle
+		if((getRadius(posLast) < radius) && (getRadius(posNow) >= radius))  // Leaving circle
 		{
 			// Update position state variable
 			outsideOfCircle = true;
@@ -231,7 +232,7 @@ public class XpenView extends View
 			// Calculate the sector
 			sector = getSector(posNow);
 		}
-		else if ((getRadius(posLast) >= radius) && (getRadius(posNow) < radius))  // Entering circle
+		else if((getRadius(posLast) >= radius) && (getRadius(posNow) < radius))  // Entering circle
 		{
 			// Update position state variable
 			outsideOfCircle = false;
@@ -251,7 +252,7 @@ public class XpenView extends View
 					// dir = -1 ...-4  to  i= 4 ... 7
 					i = 3 - dir;
 				}
-	
+				
 				// Send character in correct case
 				if(uppercase)
 				{
@@ -266,20 +267,20 @@ public class XpenView extends View
 			}
 		}
 		
-		if (outsideOfCircle)
+		if(outsideOfCircle)
 		{
 			// Norm angles to 0...PI/2 so we can check with the same values for each line
-			double al = getAngle(posLast) % (Math.PI / 2);  // Last angle normed
-			double ac = getAngle(posNow) % (Math.PI / 2);  // Current angle normed
+			double al = getAngle(posLast) % (Math.PI / 2);  // Last angle, normed
+			double ac = getAngle(posNow) % (Math.PI / 2);  // Current angle, normed
 	
 			// Exclude false hits at crossing of ~2*PI <--> 0 by only looking for smaller changes than PI/3
 			// Also excludes false hits due to (PI/2 % PI/2) = 0
-			if (Math.abs(al - ac) < Math.PI / 3)
+			if(Math.abs(al - ac) < Math.PI / 3)
 			{
 				// Count crossed lines
 				// (it's possible to "uncross" a line by going back in the other direction, only the final value is used)
-				if ((ac > Math.PI / 4) && (al <= Math.PI / 4)) dir++;  // Crossed line CCW
-				if ((ac <= Math.PI / 4) && (al > Math.PI / 4)) dir--;  // Crossed line CW
+				if((ac > Math.PI / 4) && (al <= Math.PI / 4)) dir++;  // Crossed line CCW
+				if((ac <= Math.PI / 4) && (al > Math.PI / 4)) dir--;  // Crossed line CW
 
 				// Check if a complete circle was done
 				if(Math.abs(dir) > 4)
@@ -300,7 +301,7 @@ public class XpenView extends View
 		// Remember point
 		posLast = posNow;
 	}
-
+	
 	private void img_Input_onTouchUp(MotionEvent e)
 	{
 		// Get touch point
