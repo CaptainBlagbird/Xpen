@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.util.Log;
 
 public class XpenView extends View
 {
@@ -45,7 +44,7 @@ public class XpenView extends View
 		int height = measureHeight;
 		
 		// Get orientation
-		if(measureWidth > measureHeight)  // Landscape mode
+		if(getResources().getConfiguration().orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE)
 		{
 			// Switch to button mode
 			// TODO
@@ -206,6 +205,9 @@ public class XpenView extends View
 	
 	private void img_Input_onTouchMove(MotionEvent e)
 	{
+		// Return if posLast is still undefined
+		if(posLast == null) return;
+		
 		if ((getRadius(posLast)-getRadius(posNow))<=10.0) 
 		{
 			movedPos=false;
