@@ -197,10 +197,16 @@ public class XpenView extends View
 		// Get touch point
 		posNow = new PointF(e.getX(), e.getY());
 		
-		if(getRadius(posNow) > radius) return;  // Not inside of circle
-
-		// Remember point
-		posLast = posNow;
+		if(getRadius(posNow) > radius)
+		{
+			// Not inside of circle
+			posLast = null;
+		}
+		else
+		{
+			// Remember point
+			posLast = posNow;
+		}
 	}
 	
 	private void img_Input_onTouchMove(MotionEvent e)
@@ -221,7 +227,8 @@ public class XpenView extends View
 		// Get touch point
 		posNow = new PointF(e.getX(), e.getY());
 		
-		if((getRadius(posLast) < radius) && (getRadius(posNow) >= radius))  // Leaving circle
+		// Check if leaving the circle
+		if((getRadius(posLast) < radius) && (getRadius(posNow) >= radius))
 		{
 			// Update position state variable
 			outsideOfCircle = true;
@@ -232,7 +239,8 @@ public class XpenView extends View
 			// Calculate the sector
 			sector = getSector(posNow);
 		}
-		else if((getRadius(posLast) >= radius) && (getRadius(posNow) < radius))  // Entering circle
+		// Check if entering circle, but only if moved out of the circle before
+		else if(outsideOfCircle && (getRadius(posLast) >= radius) && (getRadius(posNow) < radius))
 		{
 			// Update position state variable
 			outsideOfCircle = false;
@@ -313,10 +321,9 @@ public class XpenView extends View
 			// Send space
 			xpen.sendText(" ");
 		}
-		
 		else if(!movedPos)  // Not moved -> Tapped
 		{
-			if(getRadius(posNow) <= radius)  // Tapped inside circle
+			if(!outsideOfCircle && getRadius(posNow) <= radius)  // Tapped inside circle
 			{
 				// Send space
 				xpen.sendText(" ");
@@ -352,6 +359,8 @@ public class XpenView extends View
 		movedPos = false;
 		// Reset direction/number variable
 		dir = 0;
+		// Reset position
+		posLast = null;
 	}
 	
 	public void setIME(Xpen _xpen)
