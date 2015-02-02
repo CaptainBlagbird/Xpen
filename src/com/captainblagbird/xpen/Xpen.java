@@ -12,6 +12,7 @@ public class Xpen extends InputMethodService
 	public View onCreateInputView()
 	{
 		xpenView = (XpenView) getLayoutInflater().inflate(R.layout.input, null);
+
 		xpenView.setIME(this);
 		return xpenView;
 	}
@@ -19,10 +20,9 @@ public class Xpen extends InputMethodService
 	@Override
 	public void onUpdateSelection(int oldSelStart, int oldSelEnd, int newSelStart, int newSelEnd, int candidatesStart, int candidatesEnd)
 	{
-        super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd);
-        
+		super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd);
 		// Pass it to the view
-        xpenView.handleLettercase(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd);
+		xpenView.handleLettercase(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd);
 	}
 	
 	/** Helper to commit text to input */

@@ -6,6 +6,11 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.graphics.drawable.shapes.ArcShape;
+import android.graphics.Paint;
+import android.graphics.Canvas;
+import android.graphics.RectF;
+import android.graphics.Color;
 
 public class XpenView extends View
 {
@@ -27,12 +32,36 @@ public class XpenView extends View
 							{'n', 'y', 't', 'e'},
 							{'m', 'b', 'c', 'l'},
 							{'f', 'p', 'z', 'k'},
-							{'ä', 'q', '.', 'ö'}};	// Table of the arranged characters
+							{'!', 'q', '.', 'ö'}};	// Table of the arranged characters
 	public XpenView(Context context, AttributeSet attrs)
 	{
 		super(context,attrs);
 	}
 	
+	@Override
+	protected void onDraw(Canvas canvas)
+	{
+		super.onDraw(canvas);
+		Paint paint = new Paint();
+		paint.setARGB(255,0,0,0);
+		paint.setStrokeWidth(5);
+		paint.setStyle(Paint.Style.STROKE);
+
+		int max_x = canvas.getWidth();
+		int max_y = canvas.getHeight();
+		/*
+		 x/2 y/2 r
+		 * */
+		RectF oval = new RectF();
+		int r = 200;
+		oval.set((max_x/2)-r, (max_y/2)-r, (max_x/2)+r, (max_y/2)+r );
+		canvas.drawArc(oval, 0f, 360f, false, paint);
+		//canvas.drawCircle(max_x/2,max_y/2,50, paint);
+		//Path path = 
+		//ArcShape centreCircle = new ArcShape(0f, 360f);
+		//centreCircle.draw(canvas, paint);
+	}
+
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	{
@@ -156,6 +185,9 @@ public class XpenView extends View
 	/** Sets the background image depending on the letter case */
 	private void handleBackground()
 	{
+		findViewById(R.id.keyboard).setBackgroundResource(R.drawable.radial_background);
+		this.invalidate();
+		/*
 		if(uppercase)
 		{
 			findViewById(R.id.keyboard).setBackgroundResource(R.drawable.background_uppercase);
@@ -164,6 +196,7 @@ public class XpenView extends View
 		{
 			findViewById(R.id.keyboard).setBackgroundResource(R.drawable.background_lowercase);
 		}
+		*/
 	}
 	
 	public boolean onTouchEvent(MotionEvent e)
