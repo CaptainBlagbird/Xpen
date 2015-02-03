@@ -53,7 +53,13 @@ public class XpenView extends View
 		RectF oval = new RectF();
 		oval.set(centre_x-radius, centre_y-radius, centre_x+radius, centre_y+radius);
 		canvas.drawArc(oval, 0f, 360f, false, paint);
+		canvas.drawCircle(centre_x, centre_y, radius,paint);
 
+		float r = radius + 200;
+		canvas.drawLine(centre_x, centre_y, centre_x-r, centre_y-r, paint);
+		canvas.drawLine(centre_x, centre_y, centre_x-r, centre_y+r, paint);
+		canvas.drawLine(centre_x, centre_y, centre_x+r, centre_y+r, paint);
+		canvas.drawLine(centre_x, centre_y, centre_x+r, centre_y-r, paint);
 		//Create the sectoring lines
 		//set the characters around the sector lines
 	}
