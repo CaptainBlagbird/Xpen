@@ -19,6 +19,8 @@ public class XpenView extends View
 	private PointF		posLast;					// Last point of touch
 	private PointF		posNow;						// Current point of touch
 	private float		radius;						// Radius of circle
+	private float 		centre_x;
+	private float 		centre_y;
 	private int			sector;						// First sector on leaving circle
 	private int			dir;						// Direction (sign) and number of sectors visited
 	private boolean		outsideOfCircle = false;	// State of position, is only true if circle was left during onTouchMove
@@ -47,19 +49,13 @@ public class XpenView extends View
 		paint.setStrokeWidth(5);
 		paint.setStyle(Paint.Style.STROKE);
 
-		int max_x = canvas.getWidth();
-		int max_y = canvas.getHeight();
-		/*
-		 x/2 y/2 r
-		 * */
+		//create the centre circle
 		RectF oval = new RectF();
-		int r = 200;
-		oval.set((max_x/2)-r, (max_y/2)-r, (max_x/2)+r, (max_y/2)+r );
+		oval.set(centre_x-radius, centre_y-radius, centre_x+radius, centre_y+radius);
 		canvas.drawArc(oval, 0f, 360f, false, paint);
-		//canvas.drawCircle(max_x/2,max_y/2,50, paint);
-		//Path path = 
-		//ArcShape centreCircle = new ArcShape(0f, 360f);
-		//centreCircle.draw(canvas, paint);
+
+		//Create the sectoring lines
+		//set the characters around the sector lines
 	}
 
 	@Override
@@ -89,7 +85,8 @@ public class XpenView extends View
 		// Calculate the diameter with the circle width to image width ratio 260:800,
 		// and divide in half to get the radius
 		radius = (0.325f * width) / 2;
-		
+		centre_x = width/2;
+		centre_y = height/2;
 		// Set the new size
 		setMeasuredDimension(width, height);
 	}
