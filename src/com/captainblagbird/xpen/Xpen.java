@@ -3,6 +3,7 @@ package com.captainblagbird.xpen;
 import android.inputmethodservice.InputMethodService;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.HapticFeedbackConstants;
 
 public class Xpen extends InputMethodService
 {
@@ -13,6 +14,7 @@ public class Xpen extends InputMethodService
 	{
 		xpenView = (XpenView) getLayoutInflater().inflate(R.layout.input, null);
 		xpenView.setIME(this);
+		xpenView.setHapticFeedbackEnabled(true);
 		return xpenView;
 	}
 	
@@ -29,6 +31,7 @@ public class Xpen extends InputMethodService
 	public void sendText(String str)
 	{
 		getCurrentInputConnection().commitText(str,1);
+		xpenView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP,HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
 	}
 	
 	/** Helper to send a special key to input */
