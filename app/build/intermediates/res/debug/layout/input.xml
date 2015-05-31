@@ -1,0 +1,7 @@
+<com.captainblagbird.xpen.XpenView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/keyboard"
+	android:layout_alignParentBottom="true"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:background="@drawable/background_uppercase" /><!-- From: file:/C:/Users/aakanksha_goyal/AndroidStudioProjects/Xpen/app/src/main/res/layout/input.xml -->
