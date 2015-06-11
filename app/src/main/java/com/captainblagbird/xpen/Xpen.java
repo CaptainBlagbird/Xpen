@@ -4,6 +4,7 @@ import android.inputmethodservice.InputMethodService;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.HapticFeedbackConstants;
+import com.captainblagbird.logging.*;
 
 public class Xpen extends InputMethodService
 {
@@ -12,10 +13,9 @@ public class Xpen extends InputMethodService
 	@Override
 	public View onCreateInputView()
 	{
-		xpenView = (XpenView) getLayoutInflater().inflate(R.layout.input, null);
-
-		xpenView.setIME(this);
-		xpenView.setHapticFeedbackEnabled(true);
+		Logger.v(this, "onCreateInputView started");
+		xpenView = new XpenView(this);
+		Logger.v(this, "onCreateInputView returning the xpenview object");
 		return xpenView;
 	}
 	

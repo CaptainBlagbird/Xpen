@@ -11,6 +11,8 @@ import android.graphics.Paint;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.graphics.Color;
+import android.graphics.Point;
+import com.captainblagbird.logging.*;
 
 public class XpenView extends View
 {
@@ -19,8 +21,7 @@ public class XpenView extends View
 	private PointF		posLast;					// Last point of touch
 	private PointF		posNow;						// Current point of touch
 	private float		radius;						// Radius of circle
-	private float 		centre_x;
-	private float 		centre_y;
+	private PointF		centre;
 	private int			sector;						// First sector on leaving circle
 	private int			dir;						// Direction (sign) and number of sectors visited
 	private boolean		outsideOfCircle = false;	// State of position, is only true if circle was left during onTouchMove
@@ -35,14 +36,21 @@ public class XpenView extends View
 							{'m', 'b', 'c', 'l'},
 							{'f', 'p', 'z', 'k'},
 							{'!', 'q', '.', '@'}};	// Table of the arranged characters
+	public XpenView(Context context){
+		super(context);
+		xpen = (Xpen) context;
+		setHapticFeedbackEnabled(true);
+	}
 	public XpenView(Context context, AttributeSet attrs)
 	{
 		super(context,attrs);
+		Logger.d(this, "XpenView constructor called");
 	}
 	
 	@Override
 	protected void onDraw(Canvas canvas)
 	{
+		Logger.v(this, "onDraw called");
 		super.onDraw(canvas);
 		Paint paint = new Paint();
 		paint.setARGB(255,0,0,0);
@@ -51,22 +59,31 @@ public class XpenView extends View
 
 		//create the centre circle
 		RectF oval = new RectF();
-		oval.set(centre_x-radius, centre_y-radius, centre_x+radius, centre_y+radius);
+		oval.set(centre.x-radius, centre.y-radius, centre.x+radius, centre.y+radius);
 		canvas.drawArc(oval, 0f, 360f, false, paint);
-		canvas.drawCircle(centre_x, centre_y, radius,paint);
+		canvas.drawCircle(centre.x, centre.y, radius,paint);
 
 		float r = radius + 200;
-		canvas.drawLine(centre_x, centre_y, centre_x-r, centre_y-r, paint);
-		canvas.drawLine(centre_x, centre_y, centre_x-r, centre_y+r, paint);
-		canvas.drawLine(centre_x, centre_y, centre_x+r, centre_y+r, paint);
-		canvas.drawLine(centre_x, centre_y, centre_x+r, centre_y-r, paint);
+		//float radians = Math.toRadians(45);
+		//float x2 = 15.0 * Math.cos(radians);
+		//float y2 = 15.0 * Math.sin(radians);
+		canvas.drawLine(centre.x, centre.y, centre.x-r, centre.y-r, paint);
+		canvas.drawLine(centre.x, centre.y, centre.x-r, centre.y+r, paint);
+		canvas.drawLine(centre.x, centre.y, centre.x+r, centre.y+r, paint);
+		canvas.drawLine(centre.x, centre.y, centre.x+r, centre.y-r, paint);
 		//Create the sectoring lines
 		//set the characters around the sector lines
+		//canvas.save();
+		//canvas.rotate(-90, centre.x, centre.y);
+		//canvas.drawText("abcd", centre.x, centre.y, paint);
+		//canvas.restore();
+		Logger.v(this, "onDraw returns");
 	}
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	{
+		Logger.v(this, "onMeasure called");
 		// Get size without mode
 		int measureWidth = View.MeasureSpec.getSize(widthMeasureSpec);
 		int measureHeight = View.MeasureSpec.getSize(heightMeasureSpec);
@@ -91,10 +108,10 @@ public class XpenView extends View
 		// Calculate the diameter with the circle width to image width ratio 260:800,
 		// and divide in half to get the radius
 		radius = (0.325f * width) / 2;
-		centre_x = width/2;
-		centre_y = height/2;
+		centre = new PointF((width/2),(height/2));
 		// Set the new size
 		setMeasuredDimension(width, height);
+		Logger.v(this, "onMeasure returns");
 	}
 	
 	void handleLettercase(int oldSelStart, int oldSelEnd, int newSelStart, int newSelEnd, int candidatesStart, int candidatesEnd)
@@ -103,7 +120,6 @@ public class XpenView extends View
 		if(newSelStart == 0)
 		{
 			uppercase = true;
-			handleBackground();
 			return;
 		}
 		
@@ -126,7 +142,6 @@ public class XpenView extends View
 			uppercase = false;
 		}
 		
-		handleBackground();
 	}
 
 	/** Gets the distance from the center to point p */
@@ -183,23 +198,6 @@ public class XpenView extends View
 		int d = (int)Math.round(a);
 		// ->   0 ... 3
 		return (int)mod(d, 4);
-	}
-	
-	/** Sets the background image depending on the letter case */
-	private void handleBackground()
-	{
-		findViewById(R.id.keyboard).setBackgroundResource(R.drawable.radial_background);
-		this.invalidate();
-		/*
-		if(uppercase)
-		{
-			findViewById(R.id.keyboard).setBackgroundResource(R.drawable.background_uppercase);
-		}
-		else
-		{
-			findViewById(R.id.keyboard).setBackgroundResource(R.drawable.background_lowercase);
-		}
-		*/
 	}
 	
 	public boolean onTouchEvent(MotionEvent e)
@@ -302,7 +300,6 @@ public class XpenView extends View
 				{
 					xpen.sendText("" + Character.toUpperCase(characters[i][sector]));
 					uppercase = false;
-					handleBackground();
 				}
 				else
 				{
@@ -331,7 +328,6 @@ public class XpenView extends View
 				{
 					// Toggle letter case
 					uppercase =! uppercase;
-					handleBackground();
 
 					// Norm dir to -4 ... 4 without 0
 					int temp = 4;
@@ -375,7 +371,6 @@ public class XpenView extends View
 					case 1:
 						// Toggle letter case
 						uppercase = !uppercase;
-						handleBackground();
 						break;
 					case 2:
 						// Send backspace
@@ -397,10 +392,5 @@ public class XpenView extends View
 		dir = 0;
 		// Reset position
 		posLast = null;
-	}
-	
-	public void setIME(Xpen _xpen)
-	{
-		xpen = _xpen;
 	}
 }
