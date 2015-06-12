@@ -1,4 +1,4 @@
-package com.captainblagbird.xpen;
+package inc.flide.xpen;
 
 import android.content.Context;
 import android.graphics.PointF;
@@ -12,7 +12,7 @@ import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.graphics.Color;
 import android.graphics.Point;
-import com.captainblagbird.logging.*;
+import inc.flide.logging.*;
 
 public class XpenView extends View
 {
@@ -40,19 +40,20 @@ public class XpenView extends View
 		super(context);
 		xpen = (Xpen) context;
 		setHapticFeedbackEnabled(true);
-	}
-	public XpenView(Context context, AttributeSet attrs)
-	{
-		super(context,attrs);
 		Logger.d(this, "XpenView constructor called");
 	}
-	
+
 	@Override
 	protected void onDraw(Canvas canvas)
 	{
 		Logger.v(this, "onDraw called");
-		super.onDraw(canvas);
+		//super.onDraw(canvas);
+		canvas.drawColor(0);
 		Paint paint = new Paint();
+		paint.setARGB(255,255,255,255);
+		paint.setStyle(Paint.Style.FILL);
+		canvas.drawColor(paint.getColor());
+		paint = new Paint();
 		paint.setARGB(255,0,0,0);
 		paint.setStrokeWidth(5);
 		paint.setStyle(Paint.Style.STROKE);
@@ -64,19 +65,10 @@ public class XpenView extends View
 		canvas.drawCircle(centre.x, centre.y, radius,paint);
 
 		float r = radius + 200;
-		//float radians = Math.toRadians(45);
-		//float x2 = 15.0 * Math.cos(radians);
-		//float y2 = 15.0 * Math.sin(radians);
 		canvas.drawLine(centre.x, centre.y, centre.x-r, centre.y-r, paint);
 		canvas.drawLine(centre.x, centre.y, centre.x-r, centre.y+r, paint);
 		canvas.drawLine(centre.x, centre.y, centre.x+r, centre.y+r, paint);
 		canvas.drawLine(centre.x, centre.y, centre.x+r, centre.y-r, paint);
-		//Create the sectoring lines
-		//set the characters around the sector lines
-		//canvas.save();
-		//canvas.rotate(-90, centre.x, centre.y);
-		//canvas.drawText("abcd", centre.x, centre.y, paint);
-		//canvas.restore();
 		Logger.v(this, "onDraw returns");
 	}
 
@@ -85,19 +77,16 @@ public class XpenView extends View
 	{
 		Logger.v(this, "onMeasure called");
 		// Get size without mode
-		int measureWidth = View.MeasureSpec.getSize(widthMeasureSpec);
-		int measureHeight = View.MeasureSpec.getSize(heightMeasureSpec);
-		
-		int width = measureWidth;
-		int height = measureHeight;
+		int width = View.MeasureSpec.getSize(widthMeasureSpec);
+		int height = View.MeasureSpec.getSize(heightMeasureSpec);
 		
 		// Get orientation
 		if(getResources().getConfiguration().orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE)
 		{
 			// Switch to button mode
 			// TODO
+			width = Math.round(1.33f * height);
 			// Placeholder:
-			height = 100;
 		}
 		else  // Portrait mode
 		{
@@ -116,6 +105,7 @@ public class XpenView extends View
 	
 	void handleLettercase(int oldSelStart, int oldSelEnd, int newSelStart, int newSelEnd, int candidatesStart, int candidatesEnd)
 	{
+		Logger.d(this, "handleLettercase ->");
 		// Set uppercase if cursor is at position 0
 		if(newSelStart == 0)
 		{
@@ -142,11 +132,13 @@ public class XpenView extends View
 			uppercase = false;
 		}
 		
+		Logger.d(this, "handleLettercase <-");
 	}
 
 	/** Gets the distance from the center to point p */
 	private double getRadius(PointF p)
 	{
+		Logger.d(this, "getRadius ->");
 		// Get center point
 		PointF m = new PointF(getWidth() / 2, getHeight() / 2);
 		
@@ -155,12 +147,14 @@ public class XpenView extends View
 		double y = m.y - p.y;
 
 		// Return distance calculated with Pythagoras
+		Logger.d(this, "getRadius <-");
 		return Math.sqrt(x*x + y*y);
 	}
 
 	/** Gets the angle of point p relative to the center */
 	private double getAngle(PointF p)
 	{
+		Logger.d(this, "getAngle ->");
 		// Get center point
 		PointF m = new PointF(getWidth() / 2, getHeight() / 2);
 		
@@ -173,17 +167,20 @@ public class XpenView extends View
 		// Make all angles positive
 		if(angle < 0) angle = Math.PI * 2 + angle;
 
+		Logger.d(this, "getAngle <-");
 		return angle;
 	}
 
 	/** Modulus calculation (a % b) that supports negative numbers */
 	private double mod(double a, double b)
 	{
+		Logger.d(this, "mod ->");
 		double result;
 		// Calculate result with modulus operator
 		result = a % b;
 		// Fix zero truncation
 		if(result < 0) result += b;
+		Logger.d(this, "mod <-");
 		return result;
 	}
 	
@@ -200,6 +197,7 @@ public class XpenView extends View
 		return (int)mod(d, 4);
 	}
 	
+	@Override
 	public boolean onTouchEvent(MotionEvent e)
 	{
 		// Touch handler

@@ -1,10 +1,10 @@
-package com.captainblagbird.xpen;
+package inc.flide.xpen;
 
 import android.inputmethodservice.InputMethodService;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.HapticFeedbackConstants;
-import com.captainblagbird.logging.*;
+import inc.flide.logging.*;
 
 public class Xpen extends InputMethodService
 {
@@ -17,14 +17,6 @@ public class Xpen extends InputMethodService
 		xpenView = new XpenView(this);
 		Logger.v(this, "onCreateInputView returning the xpenview object");
 		return xpenView;
-	}
-	
-	@Override
-	public void onUpdateSelection(int oldSelStart, int oldSelEnd, int newSelStart, int newSelEnd, int candidatesStart, int candidatesEnd)
-	{
-		super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd);
-		// Pass it to the view
-		xpenView.handleLettercase(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd);
 	}
 	
 	/** Helper to commit text to input */

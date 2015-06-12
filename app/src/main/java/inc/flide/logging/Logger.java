@@ -1,4 +1,4 @@
-package com.captainblagbird.logging;
+package inc.flide.logging;
 
 import android.util.Log;
 
