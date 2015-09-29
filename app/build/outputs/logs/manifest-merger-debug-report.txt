@@ -31,7 +31,7 @@ ADDED from AndroidManifest.xml:12:2
 		ADDED from AndroidManifest.xml:12:78
 	android:icon
 		ADDED from AndroidManifest.xml:12:48
-service#com.captainblagbird.xpen.Xpen
+service#inc.flide.xpen.Xpen
 ADDED from AndroidManifest.xml:13:3
 	android:permission
 		ADDED from AndroidManifest.xml:14:4
